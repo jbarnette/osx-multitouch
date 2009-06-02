@@ -1,0 +1,9 @@
+.autotest
+CHANGELOG.rdoc
+Manifest.txt
+README.rdoc
+Rakefile
+bin/osx_multitouch
+lib/osx_multitouch/cli.rb
+lib/osx_multitouch/version.rb
+test/osx_multitouch_test.rb
