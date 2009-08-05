@@ -1,6 +1,8 @@
 require "rubygems"
 require "hoe"
 
+Hoe.plugin :doofus, :git
+
 Hoe.spec "osx-multitouch" do
   developer "John Barnette", "jbarnette@rubyforge.org"
 
