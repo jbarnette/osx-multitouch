@@ -6,13 +6,24 @@ happens.
 
 == Examples
 
-FIX (write some examples)
+    require "osx/multitouch"
+
+    OSX::MultiTouch.feel do |*touches|
+      puts "I AM A JEDI!"
+    end
+
+Your block will receive an array of touches, depending on how many
+fingers are on the trackpad.
 
 == Installation
 
     $ gem install osx-multitouch
 
 == License
+
+Original code from http://www.steike.com/code/multitouch, which
+appears to be under a Creative Commons Attribution-Noncommercial-Share
+Alike 3.0 license.
 
 Copyright 2009 John Barnette (jbarnette@rubyforge.org)
 

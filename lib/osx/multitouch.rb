@@ -3,80 +3,66 @@ require "osx/multitouch/version"
 
 
 module OSX
-  class MultiTouch
-    inline :C do |builder|
+  module MultiTouch
+    inline do |c|
+      c.add_compile_flags "-F/System/Library/PrivateFrameworks",
+        "-framework MultitouchSupport"
 
-      builder.add_compile_flags "-F/System/Library/PrivateFrameworks",
-                                "-framework MultitouchSupport"
+      c.include "<math.h>"
+      c.include "<unistd.h>"
+      c.include "<CoreFoundation/CoreFoundation.h>"
 
-      builder.include "<math.h>"
-      builder.include "<unistd.h>"
-      builder.include "<CoreFoundation/CoreFoundation.h>"
+      c.prefix <<-"END"
+        typedef int MTDeviceRef;
+        typedef int (*MTContactCallback)(int, void *, int, double, int);
 
-      builder.prefix <<-'END'
-       typedef struct { float x,y; } mtPoint;
-       typedef struct { mtPoint pos,vel; } mtReadout;
+        MTDeviceRef MTDeviceCreateDefault();
+        void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallback);
+        void MTDeviceStart(MTDeviceRef);
+        void MTDeviceStop(MTDeviceRef);
 
-       typedef struct {
-         int frame;
-         double timestamp;
-         int identifier, state, foo3, foo4;
-         mtReadout normalized;
-         float size;
-         int zero1;
-         float angle, majorAxis, minorAxis; // ellipsoid
-         mtReadout mm;
-         int zero2[2];
-         float unk2;
-       } Finger;
+        static int counter = 0;
+        static VALUE MT_CLASS = 0;
 
-       typedef int MTDeviceRef;
-       typedef int (*MTContactCallbackFunction)(int,Finger*,int,double,int);
+        int callback(int device, void *data, int fingerCount,
+                     double time, int frame) {
 
-       MTDeviceRef MTDeviceCreateDefault();
+          if (counter) return 0;
+          ++counter;
+          printf("wtf?! %x\\n", data);
 
-       void MTRegisterContactFrameCallback(MTDeviceRef,
-         MTContactCallbackFunction);
-
-       void MTDeviceStart(MTDeviceRef);
-      END
-
-      builder.c_raw <<-'END'
-        int callback(int device, Finger *data, int nFingers,
-                     double timestamp, int frame) {
-
-          int i;
-          for (i=0; i<nFingers; i++) {
-            Finger *f = &data[i];
-            printf("Frame %7d: Angle %6.2f, ellipse %6.3f x%6.3f; "
-                   "position (%6.3f,%6.3f) vel (%6.3f,%6.3f) "
-                   "ID %d, state %d [%d %d?] size %6.3f, %6.3f?\n",
-            f->frame,
-            f->angle * 90 / atan2(1,0),
-            f->majorAxis,
-            f->minorAxis,
-            f->normalized.pos.x,
-            f->normalized.pos.y,
-            f->normalized.vel.x,
-            f->normalized.vel.y,
-            f->identifier, f->state, f->foo3, f->foo4,
-            f->size, f->unk2);
+          if (!MT_CLASS) {
+            MT_CLASS = rb_cObject;
+            MT_CLASS = rb_const_get(MT_CLASS, rb_intern("OSX"));
+            MT_CLASS = rb_const_get(MT_CLASS, rb_intern("MultiTouch"));
           }
-          printf("\n");
+
+          rb_funcall(MT_CLASS, rb_intern("callback"), 0);
+          --counter;
+
           return 0;
         }
       END
 
-      builder.c <<-'END'
-        void go() {
-          printf("I AM A JEDI!\n");
+      c.c <<-'END'
+        void start() {
           MTDeviceRef dev = MTDeviceCreateDefault();
           MTRegisterContactFrameCallback(dev, callback);
           MTDeviceStart(dev);
-          printf("Ctrl-C to abort\n");
-          sleep(-1);
         }
       END
+
+      c.c <<-'END'
+        void stop() {
+          MTDeviceStop(MTDeviceCreateDefault());
+        }
+      END
+    end
+
+    module_function :start, :stop
+
+    def self.callback
+      puts "I AM A JEDI"
     end
   end
 end

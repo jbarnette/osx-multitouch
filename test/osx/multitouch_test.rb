@@ -4,7 +4,9 @@ require "osx/multitouch"
 module OSX
   class MultiTouchTest < MiniTest::Unit::TestCase
     def test_sanity
-      OSX::MultiTouch.new.go
+      OSX::MultiTouch.start
+      sleep 3
+      OSX::MultiTouch.stop
     end
   end
 end
