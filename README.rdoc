@@ -1,5 +1,9 @@
 = OSX MultiTouch
 
+* http://github.com/jbarnette/osx-multitouch
+
+== Description
+
 Record the greasy mits on your trackpad. OSX::MultiTouch lets you
 register a callback, sending events every time something multitouchy
 happens.
@@ -18,6 +22,10 @@ fingers are on the trackpad.
 == Installation
 
     $ gem install osx-multitouch
+
+== TODO
+
+* Make it work.
 
 == License
 

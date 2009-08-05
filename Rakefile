@@ -1,19 +1,11 @@
 require "rubygems"
 require "hoe"
 
-require "./lib/osx/multitouch/version.rb"
+Hoe.spec "osx-multitouch" do
+  developer "John Barnette", "jbarnette@rubyforge.org"
 
-HOE = Hoe.new "osx-multitouch", OSX::MultiTouch::VERSION do |p|
-  p.developer "John Barnette", "jbarnette@rubyforge.org"
-
-  p.url              = "http://github.com/jbarnette/osx-multitouch"
-  p.history_file     = "CHANGELOG.rdoc"
-  p.readme_file      = "README.rdoc"
-  p.extra_rdoc_files = [p.readme_file]
-  p.test_globs       = %w(test/**/*_test.rb)
-  p.testlib          = :minitest
-
-  desc               = IO.read(p.readme_file).split("\n\n")[1]
-  p.description      = desc.split(/\s*\n\s*/).join(" ")
-  p.summary          = p.description.split(/\.\s+/).first + "."
+  self.history_file     = "CHANGELOG.rdoc"
+  self.readme_file      = "README.rdoc"
+  self.extra_rdoc_files = FileList["*.rdoc"]
+  self.testlib          = :minitest
 end

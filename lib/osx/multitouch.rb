@@ -1,9 +1,9 @@
 require "inline"
-require "osx/multitouch/version"
-
 
 module OSX
   module MultiTouch
+    VERSION = "1.0.0"
+
     inline do |c|
       c.add_compile_flags "-F/System/Library/PrivateFrameworks",
         "-framework MultitouchSupport"
